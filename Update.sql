@@ -4,7 +4,7 @@ DECLARE
 
 	/* Auxiliadores de colunas */
 	json_valores_inseridos text := to_json(NEW);
-  att_identificado text;
+	att_identificado text;
  	att_identificado_valor bigint;
 	
 	/* Auxiliares de manipulação da tabela */

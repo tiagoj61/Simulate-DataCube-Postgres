@@ -2,7 +2,7 @@ CREATE OR REPLACE FUNCTION insert_array() RETURNS TRIGGER AS
 $BODY$
 DECLARE
 
-	/**/
+	/* Auxiliares de tabela */
 	nome_tabela varchar;
  	nome_tabela_array varchar;
 	col_nome varchar;
