@@ -71,7 +71,7 @@ BEGIN
 		/* Se tiver um valor novo */
 		IF LENGTH(col_novo_string)>0 OR col_novo_string IS NOT NULL THEN
 				
-				/* Colona o novo valor na posição */
+				/* Coloca o novo valor na posição */
 				EXECUTE 'UPDATE '||tab_nome_array||
 				' SET '||coluna||'=array_set(ARRAY['||array_valor_antigo_tabela||'],'||index_do_valor||','||col_novo_string||')';
 		

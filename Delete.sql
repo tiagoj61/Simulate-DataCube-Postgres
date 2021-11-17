@@ -1,46 +1,55 @@
 CREATE OR REPLACE FUNCTION delete_array() RETURNS TRIGGER AS 
 $BODY$
 DECLARE 
-	position_array INTEGER;
-	size_array INTEGER;
+
+	/* Auxiliares de tabela */
 	nome_tabela varchar;
- nome_tabela_array varchar;
- coluna varchar;
- insercao_incial varchar;
+	nome_tabela_array varchar;
+	col_nome varchar;
+	col_tipo varchar;
  
- colunas_array varchar;
- valor_novo_array varchar;
- valor_antigo_array varchar;
- tipo_array varchar;
+	/* Auxiliares de array */
+	index_do_valor INTEGER;
+	tamanho_do_array INTEGER;
+	array_valor_antigo_tabela varchar;
+
  
- quantidade_existente integer;
- 
- i integer;
+	/* Index */
+	i integer;
 
 BEGIN
+	
+	/* Definições */
 	nome_tabela:=TG_TABLE_NAME::regclass::text;
 	nome_tabela_array:=nome_tabela||'_array';
 
-	EXECUTE 'SELECT array_position(id,$1) FROM '||nome_tabela_array USING old.id into position_array ;
-	EXECUTE 'SELECT array_length(id,1) FROM '||nome_tabela_array into size_array ;
+	/* Index do valor e tamanho do array */	
+	EXECUTE 'SELECT array_position(id,$1) FROM '||nome_tabela_array USING old.id into index_do_valor ;
+	EXECUTE 'SELECT array_length(id,1) FROM '||nome_tabela_array into tamanho_do_array ;
 
-	IF position_array IS NOT NULL THEN 
-		FOR coluna,tipo_array IN
+	/* Se o valor existir */	
+	IF index_do_valor IS NOT NULL THEN 
+	
+		/* Varre as colunas da tabela e o tipo */
+		FOR col_nome,col_tipo IN
 			SELECT column_name,data_type FROM information_schema.columns WHERE table_name =nome_tabela
 		LOOP
 
-			EXECUTE 'SELECT '||coluna||' FROM '||nome_tabela_array INTO valor_antigo_array;
+			/* Valor do array na tabela antes do delete */
+			EXECUTE 'SELECT '||col_nome||' FROM '||nome_tabela_array INTO array_valor_antigo_tabela;
 			
-			valor_antigo_array:=replace(valor_antigo_array,'{','');
-			valor_antigo_array:=replace(valor_antigo_array,'}','');
+			array_valor_antigo_tabela:=replace(array_valor_antigo_tabela,'{','');
+			array_valor_antigo_tabela:=replace(array_valor_antigo_tabela,'}','');
 			
-			EXECUTE 'UPDATE '||nome_tabela_array||' SET '||coluna||'=(SELECT f_array_remove_elem(ARRAY['||valor_antigo_array||'],'||position_array||'))' ;
+			/* Remove o valor daquela posição */
+			EXECUTE 'UPDATE '||nome_tabela_array||' SET '||col_nome||'=(SELECT f_array_remove_elem(ARRAY['||array_valor_antigo_tabela||'],'||index_do_valor||'))' ;
 		
 		END LOOP;
 	END IF;
 	
-	IF size_array IS NOT NULL THEN 
-		IF size_array = 0 THEN 
+	/* Se não tiver mais nada no array */
+	IF tamanho_do_array IS NOT NULL THEN 
+		IF tamanho_do_array = 0 THEN 
 			EXECUTE 'DELETE FROM '||nome_tabela_array ;
 		END IF;
 	ELSE

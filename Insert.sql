@@ -23,7 +23,9 @@ DECLARE
 	
 	/* Index */
  	i integer;
+	
 BEGIN
+	
 	/* Definições */
 	tab_nome:=TG_TABLE_NAME::regclass::text;
 	tab_nome_array:=tab_nome||'_array';
