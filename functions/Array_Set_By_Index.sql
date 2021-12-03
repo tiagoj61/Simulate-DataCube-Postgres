@@ -1,4 +1,4 @@
-create or replace function array_set(p_input anyarray, p_index int, p_new_value anyelement)
+create or replace function atualizar_array_por_posicao(p_input anyarray, p_index int, p_new_value anyelement)
 returns anyarray
 as
 $$
