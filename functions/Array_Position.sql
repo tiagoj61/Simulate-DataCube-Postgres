@@ -1,12 +1,12 @@
-create function array_position(arr BIGINT[], elem ANYELEMENT, pos INTEGER default 1) returns INTEGER
-language sql
-as $BODY$
-select row_number::INTEGER
-from (
-    select unnest, row_number() over ()
-    from ( select unnest(arr) ) t0
-) t1
-    where row_number >= greatest(1, pos)
-    and (case when elem is null then unnest is null else unnest = elem end)
-limit 1;
+CREATE FUNCTION posicao_no_array(arr ARRAY[], elemento ANYELEMENT, posicao INTEGER) RETURNS INTEGER
+LANGUAGE SQL
+AS $BODY$
+SELECT row_number::INTEGER
+FROM (
+    SELECT unnest, row_number() over()
+    FROM ( SELECT UNNEST(arr) ) AS t0
+) AS t1
+    WHERE row_number >= greatest(1, pos)
+    AND (CASE WHEN elemento IS NULL THEN unnest IS NULL ELSE unnest = elemento END)
+LIMIT 1;
 $BODY$;
